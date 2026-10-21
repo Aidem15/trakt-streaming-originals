@@ -6,6 +6,7 @@ API='https://api.trakt.tv'
 NAMES={'Netflix':'Netflix España','HBO Max':'HBO Max España','Disney+':'Disney+ España','Prime Video':'Prime Video España'}
 MODE=os.getenv('MODO_CARGA','simular')
 BATCH=int(os.getenv('MAX_POR_LISTA','25'))
+MAX_ITEMS_PER_LIST=250
 if MODE not in ('simular','escribir') or not 1<=BATCH<=100:
     raise SystemExit('Modo o límite no válido')
 creds=json.loads(os.environ['TRAKT_CREDENTIALS_JSON'])
@@ -65,7 +66,21 @@ for platform, list_name in NAMES.items():
         if media not in ('tv','movie') or not idstr.isdigit() or not item.get('proveedores_coincidentes'): raise SystemExit('Entrada de informe inválida')
         key=(media,int(idstr))
         if key not in existing and key not in seen: candidates.append(key);seen.add(key)
-    batch=candidates[:BATCH]
+    # Trakt gratis: nunca superar 250 elementos por lista, contando los ya existentes.
+    remaining=max(0, MAX_ITEMS_PER_LIST-len(entries))
+    capacity=min(BATCH, remaining)
+    movies=[x for x in candidates if x[0]=='movie']
+    shows=[x for x in candidates if x[0]=='tv']
+    # Alternar tipos; priorizar series en caso de empate porque ya hay películas.
+    batch=[]
+    mi=si=0
+    while len(batch)<capacity and (mi<len(movies) or si<len(shows)):
+        if si<len(shows):
+            batch.append(shows[si]); si+=1
+        if len(batch)>=capacity: break
+        if mi<len(movies):
+            batch.append(movies[mi]); mi+=1
+    print(f'  Distribución del lote: películas={sum(m=="movie" for m,_ in batch)}, series={sum(m=="tv" for m,_ in batch)}; elementos actuales={len(entries)}, plazas libres={remaining}')
     print(f'{list_name}: {len(source["coincidencias"])} verificados, {len(existing)} IDs TMDB ya en lista, {len(candidates)} pendientes, lote {len(batch)}')
     results[platform]={'pendientes':len(candidates),'lote':len(batch),'modo':MODE}
     if MODE=='escribir' and batch:
@@ -76,3 +91,4 @@ for platform, list_name in NAMES.items():
         results[platform]['respuesta']=response
 Path('informe_carga_trakt.json').write_text(json.dumps(results,ensure_ascii=False,indent=2),encoding='utf-8')
 print('FIN: '+('SIMULACIÓN, sin cambios en Trakt' if MODE=='simular' else 'LOTE DE ESCRITURA FINALIZADO. Revisar informe.'))
+
