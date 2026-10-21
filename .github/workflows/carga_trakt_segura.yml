@@ -1,0 +1,41 @@
+name: Trakt - Carga inicial segura
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: 'simular (sin cambios) o escribir (añadir títulos)'
+        required: true
+        default: simular
+        type: choice
+        options:
+          - simular
+          - escribir
+      max_por_lista:
+        description: 'Máximo de títulos a añadir por lista en esta ejecución (1-100)'
+        required: true
+        default: '25'
+        type: string
+jobs:
+  carga:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Simular o añadir lote a Trakt
+        env:
+          TRAKT_CREDENTIALS_JSON: ${{ secrets.TRAKT_CREDENTIALS_JSON }}
+          MODO_CARGA: ${{ inputs.modo }}
+          MAX_POR_LISTA: ${{ inputs.max_por_lista }}
+        run: python carga_trakt_segura.py
+      - name: Guardar informe
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-carga-trakt
+          path: informe_carga_trakt.json
+          if-no-files-found: ignore
