@@ -24,14 +24,19 @@ jobs:
       - name: Comprobar Trakt y leer novedades (solo lectura)
         env:
           TRAKT_CREDENTIALS_JSON: ${{ secrets.TRAKT_CREDENTIALS_JSON }}
-          TRAKT_CLIENT_ID: ${{ secrets.TRAKT_CLIENT_ID }}
         run: python probar_trakt.py
-      - name: Publicar resultados descargables
+      - name: Simular sincronizacion Trakt sin cambios
+        env:
+          TRAKT_CREDENTIALS_JSON: ${{ secrets.TRAKT_CREDENTIALS_JSON }}
+        run: python simular_sync.py
+      - name: Publicar informes descargables
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: novedades-plataformas
-          path: novedades.json
+          name: novedades-y-simulacion
+          path: |
+            novedades.json
+            simulacion_trakt.json
           if-no-files-found: warn
           retention-days: 14
       - name: Guardar estado para la siguiente ejecución
@@ -44,4 +49,3 @@ jobs:
             git commit -m "Actualizar muestra de plataformas"
             git push
           fi
-
