@@ -30,7 +30,7 @@ jobs:
         env:
           TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
           TRAKT_CREDENTIALS_JSON: ${{ secrets.TRAKT_CREDENTIALS_JSON }}
-          MODO_BAJAS: simular
+          MODO_BAJAS: escribir
         run: python depurar_trakt.py
       - name: Incorporar nuevos titulos
         env:
