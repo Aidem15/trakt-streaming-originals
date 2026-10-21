@@ -1,0 +1,11 @@
+{
+  "region": "ES",
+  "language": "es-ES",
+  "max_candidates_per_platform": 100,
+  "platforms": {
+    "Netflix": {"provider_ids": [8], "original_network_ids": [213]},
+    "HBO Max": {"provider_ids": [1899], "original_network_ids": [49, 3186]},
+    "Disney+": {"provider_ids": [337], "original_network_ids": [2739]},
+    "Prime Video": {"provider_ids": [9, 119], "original_network_ids": [1024]}
+  }
+}
