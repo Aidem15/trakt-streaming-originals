@@ -1,0 +1,26 @@
+name: Vista previa de estrenos
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 7 * * *'
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generar candidatos sin modificar Trakt
+        env:
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+        run: python preview.py
+      - name: Descargar resultados
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidatos-streaming
+          path: preview.json
+          retention-days: 7
