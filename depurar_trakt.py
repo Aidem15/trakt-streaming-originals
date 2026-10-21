@@ -45,7 +45,8 @@ def trakt(path, method="GET", payload=None):
     return fetch(API+path, {
         "Accept":"application/json", "Content-Type":"application/json",
         "trakt-api-version":"2", "trakt-api-key":CREDS["client_id"],
-        "Authorization":"Bearer "+CREDS["token"]["access_token"]
+        "Authorization":"Bearer "+CREDS["token"]["access_token"],
+        "User-Agent":"trakt-streaming-originals-readonly/1.0"
     }, method, payload)
 
 def paged(path):
@@ -169,3 +170,4 @@ Path("informe_bajas_trakt.json").write_text(
     json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
 )
 print("Fin de comprobación de bajas. "+("SIMULACIÓN SIN CAMBIOS" if MODE=="simular" else "MODO ESCRITURA"))
+
