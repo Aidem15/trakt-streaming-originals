@@ -1,0 +1,25 @@
+name: Verificar disponibilidad España (simulación)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verificar proveedores en TMDB
+        env:
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+          VERIFICAR_POR_PLATAFORMA: '40'
+        run: python verificar_disponibilidad.py
+      - name: Descargar informe
+        uses: actions/upload-artifact@v4
+        with:
+          name: verificacion-disponibilidad
+          path: verificacion_disponibilidad.json
+          retention-days: 14
