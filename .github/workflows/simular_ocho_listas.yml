@@ -1,0 +1,24 @@
+name: Comprobar 8 listas Trakt - simulacion
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  comprobar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Comprobar ocho listas sin escribir
+        env:
+          TRAKT_CREDENTIALS_JSON: ${{ secrets.TRAKT_CREDENTIALS_JSON }}
+        run: python simular_ocho_listas.py
+      - name: Guardar informe
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-ocho-listas
+          path: informe_ocho_listas.json
