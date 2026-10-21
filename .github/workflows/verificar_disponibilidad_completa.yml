@@ -1,0 +1,31 @@
+name: Verificacion completa disponibilidad ES
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verificar 1000 titulos por plataforma sin escribir en Trakt
+        env:
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+          VERIFICAR_POR_PLATAFORMA: '1000'
+        run: python verificar_disponibilidad.py
+      - name: Guardar informe de verificacion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-verificacion-completa-es
+          path: verificacion_disponibilidad.json
+          if-no-files-found: warn
