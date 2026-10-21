@@ -1,0 +1,27 @@
+name: Simular carga inicial de catalogos
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  simulacion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Simular catalogos actuales sin escribir en Trakt
+        env:
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+          TRAKT_CREDENTIALS_JSON: ${{ secrets.TRAKT_CREDENTIALS_JSON }}
+        run: python simular_carga_inicial.py
+      - name: Descargar informe
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulacion-carga-inicial
+          path: simulacion_carga_inicial.json
+          if-no-files-found: warn
+          retention-days: 14
