@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "platforms": {
+    "Netflix": {},
+    "HBO Max": {},
+    "Disney+": {},
+    "Prime Video": {}
+  }
+}
