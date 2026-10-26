@@ -2,7 +2,13 @@
   "version": 1,
   "platforms": {
     "Netflix": {},
-    "HBO Max": {},
+    "HBO Max": {
+      "movie:1078605": {
+        "days": [
+          "2026-10-26"
+        ]
+      }
+    },
     "Disney+": {},
     "Prime Video": {}
   }
